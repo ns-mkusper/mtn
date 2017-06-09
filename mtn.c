@@ -37,10 +37,10 @@
 
 //// enable unicode functions in mingw
 //#ifdef WIN32
-//    #define UNICODE
-//    #define _UNICODE
+//#define UNICODE
+//#define _UNICODE
 //#endif
- #include <sys/time.h>
+#include <sys/time.h>
 #include <sys/resource.h> 
 #include <assert.h>
 #include <ctype.h>
@@ -112,8 +112,8 @@ params parameters =
 
 /* misc functions */
 
-// Get the average color of the square of size d*d
-// at pos x,y. Return it encoded as a single integer.
+//Get the average color of the square of size d*d
+//at pos x,y. Return it encoded as a single integer.
 int get_average_color(gdImage *img, int xs, int ys, int d)
 {
 	int x, y;
@@ -125,14 +125,14 @@ int get_average_color(gdImage *img, int xs, int ys, int d)
 	b=0;
 	for (x=xs; x < xs + d; x++) {
 		for (y=ys; y < ys + d; y++) {
-//                        av_log(NULL, LOG_INFO, "xs: %d, yx: %d, d: %d, x: %d, y:%d\n", xs, ys, d, x, y);
+                        //av_log(NULL, LOG_INFO, "xs: %d, yx: %d, d: %d, x: %d, y:%d\n", xs, ys, d, x, y);
                         
 			color=gdImageGetPixel(img, x, y);
 
 			r += gdImageRed(img, color);
 			g += gdImageGreen(img, color);
 			b += gdImageBlue(img, color);
-//                        i++;
+                        //i++;
 
 		}
 	}
@@ -164,11 +164,11 @@ void strprepend(char* s, const char* t)
                 s[i]=t[i];
         }
 }
-// Assumes 0 <= range <= RAND_MAX
-// Returns in the half-open interval [0, max]
+//Assumes 0 <= range <= RAND_MAX
+//Returns in the half-open interval [0, max]
 
-// Assumes 0 <= range <= RAND_MAX
-// Returns in the half-open interval [0, max]
+//Assumes 0 <= range <= RAND_MAX
+//Returns in the half-open interval [0, max]
 long random_at_most(long max) {
         unsigned long
                 // max <= RAND_MAX < ULONG_MAX, so this is okay.
@@ -801,8 +801,8 @@ void save_AVFrame(AVFrame *pFrame, int src_width, int src_height, int pix_fmt,
                 av_log(NULL, AV_LOG_ERROR, "  gdImageCreateTrueColor failed: width %d, height %d\n", dst_width, dst_height);
                 goto cleanup;
         }
-//        FrameRGB_2_gdImage(pFrameRGB, ip, dst_width, dst_height);
-//        int ret=save_jpg(ip, filename);
+        //FrameRGB_2_gdImage(pFrameRGB, ip, dst_width, dst_height);
+        //int ret=save_jpg(ip, filename);
 
         /* if (0 != ret) { */
         /*         av_log(NULL, AV_LOG_ERROR, "  save_jpg failed: %s\n", filename); */
@@ -1159,9 +1159,9 @@ int read_and_decode(AVFormatContext *pFormatCtx, int video_index,
         //for (got_picture=0; 0 == got_picture; av_free_packet(&packet)) {
         // keep decoding until we get a key frame
         for (got_picture=0; 0 == got_picture
-//        || (1 == key_only && !(1 == pFrame->key_frame && FF_I_TYPE == pFrame->pict_type)); // same as version 0.61
+                     //|| (1 == key_only && !(1 == pFrame->key_frame && FF_I_TYPE == pFrame->pict_type)); // same as version 0.61
                      || (1 == key_only && !(1 == pFrame->key_frame || AV_PICTURE_TYPE_I == pFrame->pict_type)); // same as version 2.42
-//        || (1 == key_only && 1 != pFrame->key_frame); // is there a reason why not use this? t_warhawk_review_gt_h264.mov (svq3) seems to set only pict_type
+             //|| (1 == key_only && 1 != pFrame->key_frame); // is there a reason why not use this? t_warhawk_review_gt_h264.mov (svq3) seems to set only pict_type
              av_free_packet(&packet)) {
 
                 if (0 != av_read_frame(pFormatCtx, &packet)) {
@@ -1397,7 +1397,7 @@ int really_seek(AVFormatContext *pFormatCtx, int index, int64_t timestamp, int f
         }
         if (duration > 0) {
                 int64_t byte_pos=av_rescale(timestamp, avio_size(pFormatCtx->pb), duration_tb);
-//                av_log(NULL, LOG_INFO, "AVSEEK_FLAG_BYTE: byte_pos: %"PRId64", timestamp: %"PRId64", file_size: %"PRId64", duration_tb: %"PRId64"\n", byte_pos, timestamp, avio_size(pFormatCtx->pb), duration_tb);
+                //av_log(NULL, LOG_INFO, "AVSEEK_FLAG_BYTE: byte_pos: %"PRId64", timestamp: %"PRId64", file_size: %"PRId64", duration_tb: %"PRId64"\n", byte_pos, timestamp, avio_size(pFormatCtx->pb), duration_tb);
                 return av_seek_frame(pFormatCtx, index, byte_pos, AVSEEK_FLAG_BYTE);
         }
 
@@ -1472,7 +1472,7 @@ void make_thumbnail(char *file)
         int average_color_square_size=0; // average color of frame
         int frame_center_point=0; // center of frame (avg)
         int average_color=0; // average color of frame
-//        int average_color_two=0; // average color of frame
+        //int average_color_two=0; // average color of frame
 
         av_log(NULL, LOG_INFO, "\n");
 
@@ -1528,8 +1528,8 @@ void make_thumbnail(char *file)
                 }
                 if (NULL != parameters.gb_N_suffix && is_reg(tn.info_filename)) {
                         av_log(NULL, LOG_INFO, "%s: info file %s already exists. omitted.\n", parameters.gb_argv0, tn.info_filename);
-//                                                       remove( tn.out_filename );
-//                        goto cleanup;
+                        //remove( tn.out_filename );
+                        //goto cleanup;
                 }
         }
 
@@ -1617,7 +1617,10 @@ void make_thumbnail(char *file)
                 av_log(NULL, AV_LOG_ERROR, "  couldn't open codec %s id %d: %d\n", pCodec->name, pCodec->id, ret);
                 goto cleanup;
         }        pCodecCtx->get_buffer2=our_get_buffer;
+        //POSSIBLE MEMORY LEAK!!!
+        // 
         //pCodecCtx->release_buffer=our_release_buffer;
+        pCodecCtx->av_frame_unref()
 
         // Allocate video frame
         pFrame=av_frame_alloc();
@@ -1633,14 +1636,14 @@ void make_thumbnail(char *file)
         double duration;
         
         if (parameters.gb_x_duration > 1) {
-//                duration=((parameters.gb_x_duration - parameters.gb_B_begin) - parameters.gb_E_end);
-                                duration=(double)parameters.gb_x_duration;
+                //duration=((parameters.gb_x_duration - parameters.gb_B_begin) - parameters.gb_E_end);
+                duration=(double)parameters.gb_x_duration;
 
         } else {
                 duration=(double) (pFormatCtx->duration / AV_TIME_BASE) - (parameters.gb_B_begin + parameters.gb_E_end); // can be unknown & can be incorrect (e.g. .vob files)
         }
         if (duration <= 0) {
-                                av_log(NULL, LOG_INFO, "   GUESSING DURATION!!");
+                av_log(NULL, LOG_INFO, "   GUESSING DURATION!!");
                 duration=guess_duration(pFormatCtx, video_index, pCodecCtx, pFrame);
                 // have to turn timestamping off because it'll be incorrect
                 if (1 == parameters.gb_t_timestamp) { // on
@@ -1653,7 +1656,7 @@ void make_thumbnail(char *file)
                 goto cleanup;
         }
         int64_t duration_tb=duration / av_q2d(pStream->time_base); // in time_base unit
-//                av_log(NULL, LOG_INFO, "   DURATION: %.2f\n", duration);
+        //av_log(NULL, LOG_INFO, "   DURATION: %.2f\n", duration);
         double start_time=(double) pFormatCtx->start_time / AV_TIME_BASE; // in seconds
         // VTS_01_2.VOB & beyond from DVD seem to be like this
         if (start_time > duration) {
@@ -1723,20 +1726,20 @@ void make_thumbnail(char *file)
                 }
         } else {
                 net_duration=duration - start_time - parameters.gb_B_begin - parameters.gb_E_end;
-                        av_log(NULL, LOG_INFO, "  duration: %.2f and net duration: %.2f.\n", duration, net_duration);
+                av_log(NULL, LOG_INFO, "  duration: %.2f and net duration: %.2f.\n", duration, net_duration);
                 if (net_duration <= 0) {
                         av_log(NULL, LOG_INFO, "  duration: %.2f s, net duration after -B & -E is negative: %.2f s.\n", duration, net_duration);
                         goto cleanup;
                 }
         }
-//        net_duration=duration - parameters.gb_B_begin - parameters.gb_E_end; // DVD
+        //net_duration=duration - parameters.gb_B_begin - parameters.gb_E_end; // DVD
         int near_end=0;
         int bad_color=0;
         int64_t last_average_color_time=0;
         int64_t seek_target_step =((net_duration / (parameters.gb_r_row))) / av_q2d(pStream->time_base);
         seek_target_step -= (int64_t)random_at_most((seek_target_step/ 20) );
         int64_t rand_target_change=(int64_t)random_at_most(seek_target_step/10);
-//        seek_target_step+=(rand_target_change);
+        //seek_target_step+=(rand_target_change);
         int64_t seek_target_step_original=seek_target_step;
 
         
@@ -1747,11 +1750,11 @@ void make_thumbnail(char *file)
         int scaled_src_width, scaled_src_height;
         calc_scale_src(pCodecCtx->width, pCodecCtx->height, sample_aspect_ratio,
                        &scaled_src_width, &scaled_src_height);
-    if (scaled_src_width != pCodecCtx->width || scaled_src_height != pCodecCtx->height) {
-        av_log(NULL, LOG_INFO, "  * scaling input * %dx%d => %dx%d according to sample_aspect_ratio %d/%d\n",
-               pCodecCtx->width, pCodecCtx->height, scaled_src_width, scaled_src_height,
-               sample_aspect_ratio.num, sample_aspect_ratio.den);
-    }
+        if (scaled_src_width != pCodecCtx->width || scaled_src_height != pCodecCtx->height) {
+                av_log(NULL, LOG_INFO, "  * scaling input * %dx%d => %dx%d according to sample_aspect_ratio %d/%d\n",
+                       pCodecCtx->width, pCodecCtx->height, scaled_src_width, scaled_src_height,
+                       sample_aspect_ratio.num, sample_aspect_ratio.den);
+        }
 
         tn.column=parameters.gb_c_column + 1; // will be -1 in the loop
         int seek_mode=1; // 1=seek; 0=non-seek
@@ -1799,9 +1802,9 @@ void make_thumbnail(char *file)
                 tn.shot_height -= tn.shot_height%2; // floor to even number
                 tn.center_gap=(tn.width - parameters.gb_g_gap*(tn.column+1) - tn.shot_width * tn.column) / 2.0;
         }
-        /* if (tn.step == 0) { */
-        /*     av_log(NULL, AV_LOG_ERROR, "  step is zero; movie is too short?\n"); */
-        /* } */
+        if (tn.step == 0) {
+            av_log(NULL, AV_LOG_ERROR, "  step is zero; movie is too short?\n");
+        }
         if (tn.column != parameters.gb_c_column) {
                 av_log(NULL, LOG_INFO, "  changing # of column to %d to meet minimum height of %d; see -h option\n", tn.column, parameters.gb_h_height);
         }
@@ -1829,14 +1832,14 @@ void make_thumbnail(char *file)
         /* if (tn.width > 65500 || tn.height > 65500) { */
         /*     av_log(NULL, AV_LOG_ERROR, "  jpeg only supports max size of 65500\n"); */
         /* } */
-//        av_log(NULL, LOG_INFO, "  XXXXXXXXXXXXXXXXXXXXX\n");
+        //av_log(NULL, LOG_INFO, "  XXXXXXXXXXXXXXXXXXXXX\n");
         //(int64_t) (((parameters.gb_C_cut / parameters.gb_r_row) - 1) / av_q2d(pStream->time_base)); // can be unknown & can be incorrect (e.g. .vob files)
-//        int evade_step=MIN(10, (seek_target_step * av_q2d(pStream->time_base)) / 14); // seconds to evade blank screen ; max 10 s
-//        int evade_step=0;
+        //int evade_step=MIN(10, (seek_target_step * av_q2d(pStream->time_base)) / 14); // seconds to evade blank screen ; max 10 s
+        //int evade_step=0;
         int evade_step=MIN(1, seek_target_step_seconds); // seconds to evade blank screen ; max 10 s        
         av_log(NULL, LOG_INFO, "  step: %.2f s; # tiles: %dx%d, tile size: %dx%d; total size: %dx%d\n",seek_target_step * av_q2d(pStream->time_base), tn.column, tn.row, tn.shot_width, tn.shot_height, tn.width, tn.height);
         // FIXME: what's the min value? 1?
-//        int evade_step = MIN(1, seek_target_step_seconds / 14); // seconds to evade blank screen ; max 10 s
+        //int evade_step = MIN(1, seek_target_step_seconds / 14); // seconds to evade blank screen ; max 10 s
         if (near_end > 0)          evade_step=0;
         if (evade_step <= 0) {
                 av_log(NULL, LOG_INFO, "  step is less than 14 s; blank & blur evasion is turned off.\n");
@@ -1865,7 +1868,7 @@ void make_thumbnail(char *file)
 
         /* create the output image */
         tn.out_ip=NULL;
-//    tn.out_ip=gdImageCreateTrueColor(tn.width, tn.height);
+        //tn.out_ip=gdImageCreateTrueColor(tn.width, tn.height);
         /* if (NULL == tn.out_ip) { */
         /*     av_log(NULL, AV_LOG_ERROR, "  gdImageCreateTrueColor failed: width %d, height %d\n", tn.width, tn.height); */
         /* } */
@@ -1913,11 +1916,11 @@ restart:
         int64_t begin_time_tb=0;
         if ( parameters.gb_B_begin > 0 ) begin_time_tb=parameters.gb_B_begin / av_q2d(pStream->time_base);
 
-//    better_step =
+        //better_step =
 
 
         //(int64_t)(((net_duration / parameters.gb_r_row) + parameters.gb_B_begin + start_time) / av_q2d(pStream->time_base));
-//        double step=calc_time(eff_target, pStream->time_base, start_time) / AV_TIME_BASE
+        //double step=calc_time(eff_target, pStream->time_base, start_time) / AV_TIME_BASE
 
         double prevjpegshot_pts_seconds=prevjpegshot_pts * av_q2d(pStream->time_base);
         
@@ -1925,14 +1928,14 @@ restart:
 
 
         seek_target=(start_time_tb + begin_time_tb);
-//        seek_target+=(int64_t)random_at_most((long)seek_target_step / 100);
+        //seek_target+=(int64_t)random_at_most((long)seek_target_step / 100);
         double seek_target_seconds=seek_target * av_q2d(pStream->time_base);
-//                        seek_target=seek_target_step + (int64_t)((start_time + parameters.gb_B_begin) / av_q2d(pStream->time_base) / seek_target_step_seconds);
+        //seek_target=seek_target_step + (int64_t)((start_time + parameters.gb_B_begin) / av_q2d(pStream->time_base) / seek_target_step_seconds);
         //(int64_t) ((parameters.gb_C_cut / (parameters.gb_r_row + 1)) * AV_TIME_BASE); // can be unknown & can be incorrect (e.g. .vob files)
-//        net_duration / (tn.column * gb_r_row + 1)
+        //net_duration / (tn.column * gb_r_row + 1)
         //(int64_t)(((net_duration / parameters.gb_r_row) + parameters.gb_B_begin + start_time) / av_q2d(pStream->time_base));;
         //(int64_t)((net_duration / parameters.gb_r_row) / av_q2d(pStream->time_base));
-//        ic->duration / AV_TIME_BASE;
+        //ic->duration / AV_TIME_BASE;
 
         //seek_target -= (int64_t)random_at_most((long)seek_target_step - 1);
         int idx=0; // idx=thumb_idx
@@ -1942,12 +1945,12 @@ restart:
         int real_idx=0;
 
         int thumb_nb=parameters.gb_r_row;
-//        dupe_count=0;
+        //dupe_count=0;
         int64_t prevfound_pts=0; // pts of previous decoding
 
         gdImagePtr edge_ip=NULL; // edge image
         int wedone=0;
-//    for (idx=0; idx < thumb_nb; idx++) {
+        //for (idx=0; idx < thumb_nb; idx++) {
         while (wedone == 0) {
                 idx++;
                 real_idx++;
@@ -1963,23 +1966,23 @@ restart:
                 format_time(calc_time(eff_target, pStream->time_base, start_time), time_tmp, ':');
                 if (/* parameters.gb_E_end > 0 && parameters.gb_x_duration > 1 &&  */seek_target_seconds > (net_duration + parameters.gb_B_begin)) {
                         av_log(NULL, LOG_INFO, "EOF: HIT DURATION");
-//                        goto skip_shot;
-goto eof;
+                        //goto skip_shot;
+                        goto eof;
                 }
 
-//        for some formats, previous seek might over shoot pass this seek_target; is this a bug in libavcodec?
+                //for some formats, previous seek might over shoot pass this seek_target; is this a bug in libavcodec?
 
 
 
                 
                 
-//                if (prevjpegshot_pts > seek_target || seek_target < 0) seek_target=prevjpegshot_pts + seek_target_step - (int64_t)random_at_most((long)seek_target_step - 1);
-//                                                av_log(NULL, LOG_INFO, "(int64_t)random_at_most((long)seek_target_step - 1): %"PRId64", seek_target: %"PRId64"", (int64_t)random_at_most((long)seek_target_step - 1), seek_target);
+                //if (prevjpegshot_pts > seek_target || seek_target < 0) seek_target=prevjpegshot_pts + seek_target_step - (int64_t)random_at_most((long)seek_target_step - 1);
+                //av_log(NULL, LOG_INFO, "(int64_t)random_at_most((long)seek_target_step - 1): %"PRId64", seek_target: %"PRId64"", (int64_t)random_at_most((long)seek_target_step - 1), seek_target);
                 /* if (idx == 2)        av_log(NULL, LOG_INFO, "  duration: %lf s, net duration %lf.\n", duration, net_duration); */
 
                 /* if (idx >= 2) { */
 
-//                }
+                //}
 
                 //usleep(100009);        
                 /* if (prevshot_pts > eff_target && 0 == evade_try) { */
@@ -2047,7 +2050,7 @@ goto eof;
                 double decode_time=0;
 
                 double found_diff=(found_pts - eff_target) * av_q2d(pStream->time_base);
-//                av_log(NULL, LOG_INFO, "  found_diff: %.2f\n", found_diff); // DEBUG
+                //av_log(NULL, LOG_INFO, "  found_diff: %.2f\n", found_diff); // DEBUG
                 // if found frame is too far off from target, we'll disable seeking and start over
                 if (1 == seek_mode && 0 == parameters.gb_z_seek
                     // usually movies have key frames every 10 s
@@ -2117,14 +2120,14 @@ goto eof;
 //av_log(NULL, LOG_INFO, "1111");
                                 goto skip_shot;
                         }
-//               if (found_pts - prevjpegshot_pts > (seek_target_step - seek_target_step/8) && prevjpegshot_pts > 10)
-//                        if (found_pts - prevjpegshot_pts <= seek_target_step > found_pts > 100) {
+                        //if (found_pts - prevjpegshot_pts > (seek_target_step - seek_target_step/8) && prevjpegshot_pts > 10)
+                        //if (found_pts - prevjpegshot_pts <= seek_target_step > found_pts > 100) {
                         /*                                 idx--; */
                         /* thumb_nb--; */
 
                 }
 
-//                rand_target_change=(int64_t)random_at_most((long)seek_target_step - 1);
+                //rand_target_change=(int64_t)random_at_most((long)seek_target_step - 1);
                 /* convert to AV_PIX_FMT_RGB24 & resize */
                 sws_scale(pSwsCtx, (const uint8_t * const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
                           pFrameRGB->data, pFrameRGB->linesize);
@@ -2179,14 +2182,14 @@ goto eof;
                 }
                 FrameRGB_2_gdImage(pFrameRGB, ip, tn.shot_width, tn.shot_height);
 
-//                                av_log(NULL, LOG_INFO, "%s (%s): output file.\n", individual_filename,tn.out_filename);
+                //av_log(NULL, LOG_INFO, "%s (%s): output file.\n", individual_filename,tn.out_filename);
                 //Create file name.
 //char *individual_suffix=*individual_filename;
 //individual_suffix -= 16;
 
-//                average_color=1;
+                //average_color=1;
 
-//                        av_log(NULL, LOG_INFO, "%s : %d\n", idx, individual_filename, average_color);
+                //av_log(NULL, LOG_INFO, "%s : %d\n", idx, individual_filename, average_color);
                 found_target_seconds=found_pts * av_q2d(pStream->time_base);
                 char *individual_suffix=strstr(individual_filename, previous_suffix);
                 if(individual_suffix==NULL) *individual_suffix=strstr(individual_filename, "_0000");
@@ -2203,7 +2206,7 @@ goto eof;
                         av_log(NULL, LOG_INFO, "%s (#%05d) already exists! (DUPECOUNT: %d)!\n", individual_filename, shots_saved, dupe_count);
 
                         rand_target_change=((seek_target_step / 10) + random_at_most(seek_target_step));
-//                                seek_target=((seek_target_step * shots_saved + 1) - rand_target_change);
+                        //seek_target=((seek_target_step * shots_saved + 1) - rand_target_change);
 
                         /* last_seek_target-=seek_target_step_original; */
                         /* prevjpegshot_pts-=seek_target_step_original; */
@@ -2217,14 +2220,14 @@ goto eof;
                         seek_target += rand_target_change;
                         found_pts+=rand_target_change;
                         eff_target += rand_target_change;
-//                                found_pts -= rand_target_change;
+                        //found_pts -= rand_target_change;
 
                         dupe_count++;
 
 
                         idx--;
 //av_log(NULL, LOG_INFO, "3333");
-//                        goto skip_shot;
+                        //goto skip_shot;
                 } else dupe_count=0;
 
 
@@ -2233,18 +2236,18 @@ goto eof;
 
                                 average_color_square_size=(((pCodecCtx->width + pCodecCtx->height) / 2) / 10); // average color of frame
                                 average_color=get_average_color(ip, (pCodecCtx->width / 2), (pCodecCtx->height / 2), average_color_square_size);
-//                                average_color_two=get_average_color(ip, (pCodecCtx->width- ((average_color_square_size / 10) + 1)), (pCodecCtx->height- ((average_color_square_size / 10) + 1)), ((average_color_square_size / 10)) );
-//                                average_color=(get_average_color(ip, 1, 1, (pCodecCtx->width/10)) + get_average_color(ip, (pCodecCtx->width - ((pCodecCtx->width / 10) + 1 )), (pCodecCtx->height - ((pCodecCtx->height / 10) + 1 )), (pCodecCtx->width/10))) / 2;
+                                //average_color_two=get_average_color(ip, (pCodecCtx->width- ((average_color_square_size / 10) + 1)), (pCodecCtx->height- ((average_color_square_size / 10) + 1)), ((average_color_square_size / 10)) );
+                                //average_color=(get_average_color(ip, 1, 1, (pCodecCtx->width/10)) + get_average_color(ip, (pCodecCtx->width - ((pCodecCtx->width / 10) + 1 )), (pCodecCtx->height - ((pCodecCtx->height / 10) + 1 )), (pCodecCtx->width/10))) / 2;
 
                         }
                         last_average_color_time=seek_target;
                                 
-//                                av_log(NULL, LOG_INFO, "AVG COLOR: %d\n", average_color);
-//                        if (average_color < MAXBLACK || average_color_two < MAXBLACK && average_color_two > 0) {
+                        //av_log(NULL, LOG_INFO, "AVG COLOR: %d\n", average_color);
+                        //if (average_color < MAXBLACK || average_color_two < MAXBLACK && average_color_two > 0) {
                         if (average_color < MAXBLACK) {
-//                                                                                if (average_color < MAXBLACK) {
+                                //if (average_color < MAXBLACK) {
                                         
-//                                av_log(NULL, LOG_INFO, "Skipping shot @%.2f BLACK! (%"PRId64" || %"PRId64" < %"PRId64")\n", found_target_seconds, average_color, average_color_two, MAXBLACK);
+                                //av_log(NULL, LOG_INFO, "Skipping shot @%.2f BLACK! (%"PRId64" || %"PRId64" < %"PRId64")\n", found_target_seconds, average_color, average_color_two, MAXBLACK);
                                 av_log(NULL, LOG_INFO, "Skipping shot @%.2f BLACK! (%"PRId64" < %"PRId64")\n", found_target_seconds, average_color, MAXBLACK);
                                 bad_color=1;
                                 if (seek_target - seek_target_step > start_time_tb) seek_target -= seek_target_step; 
@@ -2260,7 +2263,7 @@ goto eof;
                                 rand_target_change=random_at_most(seek_target_step_original);
 
                                 last_seek_target-=seek_target_step_original;
-//                        prevjpegshot_pts-=seek_target_step_original;
+                                //prevjpegshot_pts-=seek_target_step_original;
                                 seek_target += rand_target_change;
                                 found_pts+=rand_target_change;
                                 eff_target += rand_target_change;
@@ -2271,23 +2274,23 @@ goto eof;
                                 goto skip_shot;
 
                         }
-//                        else if (average_color > MAXWHITE || average_color_two > MAXWHITE  && average_color_two > 0) {
+                        //else if (average_color > MAXWHITE || average_color_two > MAXWHITE  && average_color_two > 0) {
                         else if (average_color > MAXWHITE && average_color > 0) {
-//                                                                                                                else if (average_color > MAXWHITE) {
-//                                av_log(NULL, LOG_INFO, "Skipping shot @%.2f WHITE! (%"PRId64" || %"PRId64" > %"PRId64")\n", found_target_seconds, average_color, average_color_two, MAXWHITE);
+                                //else if (average_color > MAXWHITE) {
+                                //av_log(NULL, LOG_INFO, "Skipping shot @%.2f WHITE! (%"PRId64" || %"PRId64" > %"PRId64")\n", found_target_seconds, average_color, average_color_two, MAXWHITE);
                                 av_log(NULL, LOG_INFO, "Skipping shot @%.2f WHITE! (%"PRId64" > %"PRId64")\n", found_target_seconds, average_color, MAXWHITE);
                                 bad_color=1;
-//                                if (seek_target - seek_target_step > start_time_tb) seek_target -= seek_target_step; 
-//                                seek_target += (int64_t)MAX(100,random_at_most(MIN(10000, seek_target_step)));
+                                //if (seek_target - seek_target_step > start_time_tb) seek_target -= seek_target_step; 
+                                //seek_target += (int64_t)MAX(100,random_at_most(MIN(10000, seek_target_step)));
                                 rand_target_change=random_at_most(seek_target_step_original);
 
                                 last_seek_target-=seek_target_step_original;
-//                        prevjpegshot_pts-=seek_target_step_original;
+                                //prevjpegshot_pts-=seek_target_step_original;
                                 seek_target += rand_target_change;
                                 found_pts+=rand_target_change;
                                 eff_target += rand_target_change;
 
-//                                        seek_target -= seek_target_step;
+                                //seek_target -= seek_target_step;
                                 /* seek_target += (int64_t)random_at_most((long)seek_target_step); */
                                 /* if (seek_target < (last_average_color_time - seek_target_step) && seek_target > start_time_tb) { */
                                 /*         seek_target += seek_target_step; */
@@ -2308,7 +2311,7 @@ goto eof;
                 } else {
                         bad_color=0;
                         last_average_color=0;
-//                                bad_color=0;
+                        //bad_color=0;
                         MAXBLACK/=2;
                         MAXWHITE*=2;
                 }
@@ -2324,7 +2327,7 @@ goto eof;
 
                 /* timestamping */
                 // FIXME: this frame might not actually be at the requested position. is pts correct?
-//                if (1 == t_timestamp) { // on
+                //if (1 == t_timestamp) { // on
                 /* char time_str[15]; // FIXME */
                 /* format_time(calc_time(found_pts, pStream->time_base, start_time), time_str, ':'); */
                 /* char *str_ret=image_string(ip, */
@@ -2340,14 +2343,14 @@ goto eof;
                 /*                 idx, blank, edge[0], edge[1], edge[2], edge[3], edge[4], edge[5]); */
                 /*         image_string(ip, parameters.gb_f_fontname, COLOR_WHITE, parameters.gb_F_ts_font_size, 2, 0, idx_str, 1, COLOR_BLACK); */
                 /* } */
-//                }
+                //}
 
                 /* save individual shots */
-//                if (1 == parameters.gb_I_individual) {
-//            char time_str[15]; // FIXME
-//            format_time(calc_time(found_pts, pStream->time_base, start_time), time_str, '_');
+                //if (1 == parameters.gb_I_individual) {
+                //char time_str[15]; // FIXME
+                //format_time(calc_time(found_pts, pStream->time_base, start_time), time_str, '_');
 
-//                        if (found_pts - prevjpegshot_pts >= seek_target_step) {
+                //if (found_pts - prevjpegshot_pts >= seek_target_step) {
                 //(duration / parameters.gb_r_row)
 
                 /* if (seek_target_step <= ( (4 * seek_target_step_original) / 5) && near_end < 1) { */
@@ -2361,19 +2364,19 @@ goto eof;
                 if (  (real_idx - idx) < 5 && near_end < 1  && seek_target_step  > (found_pts - prevjpegshot_pts) && shots_saved > 2 /* && (found_pts - prevjpegshot_pts) > seek_target_step */ && bad_color < 1 && idx == -1 ) {
                         av_log(NULL, LOG_INFO, "Not saving shot #%d (%.2f) to %s because step is too small! (%.2f > %.2f)\n", shots_saved, (found_pts * av_q2d(pStream->time_base)), individual_filename, seek_target_step_seconds, ((found_pts - prevjpegshot_pts) * av_q2d(pStream->time_base)));
 
-//                                         eff_target -= (int64_t)random_at_most((long)seek_target_step - 1); */
+                        //eff_target -= (int64_t)random_at_most((long)seek_target_step - 1); */
 
 /*                         found_pts -= (int64_t)random_at_most((long)seek_target_step - 1);                                         */
 
                         seek_target+=(int64_t)random_at_most((long)seek_target_step); 
-//                        eff_target += rand_target_change;
-//                        found_pts += rand_target_change;
+                        //eff_target += rand_target_change;
+                        //found_pts += rand_target_change;
                         idx--;
 //av_log(NULL, LOG_INFO, "6666");
                         goto skip_shot;
                 } else if (found_target_seconds < parameters.gb_B_begin && found_target_seconds > 0 && parameters.gb_x_duration < 1) {
                         av_log(NULL, LOG_INFO, "Not saving shot %s because START TIME is too small! (%lf < %lf)\n", individual_filename, found_target_seconds, parameters.gb_B_begin);
-//                        seek_target=parameters.gb_B_begin/  AV_TIME_BASE;
+                        //seek_target=parameters.gb_B_begin/  AV_TIME_BASE;
                         seek_target=prevshot_pts + seek_target_step;
                         idx--;
 //av_log(NULL, LOG_INFO, "7777");
@@ -2381,9 +2384,9 @@ goto eof;
 
                 }else if (bad_color == 1 && last_average_color >= 100) {
                         av_log(NULL, LOG_INFO, "Not saving shot %s because bad color");
-//                        seek_target=parameters.gb_B_begin/  AV_TIME_BASE;
+                        //seek_target=parameters.gb_B_begin/  AV_TIME_BASE;
                         last_average_color=0;
-        bad_color=0;
+                        bad_color=0;
                         idx--;
 //av_log(NULL, LOG_INFO, "7777");
                         goto skip_shot;
@@ -2408,17 +2411,18 @@ goto eof;
                         /* if (near_end < 1 && (makepositive (seek_target - (shots_saved * seek_target_step))) > seek_target_step * 2) { */
                         /*         seek_target = (shots_saved * seek_target_step_original); */
                         /* } */
-//                               seek_target -= (int64_t)random_at_most((long)seek_target_step / 15);
+                        //seek_target -= (int64_t)random_at_most((long)seek_target_step / 15);
 
                         goto skip_shot;
 
                 } else
-av_log(NULL, LOG_INFO, "NO CONDITIONS MET\n");
-                        if ( seek_target_seconds >= (net_duration + start_time + parameters.gb_B_begin) - seek_target_step_seconds  ) {
-                //else if (near_end > 0 && (makepositive (seek_target - (shots_saved * seek_target_step))) < seek_target_step_original) {
+                        av_log(NULL, LOG_INFO, "NO CONDITIONS MET\n");
+                if ( seek_target_seconds >= (net_duration + start_time + parameters.gb_B_begin) - seek_target_step_seconds  ) {
+                        //else if (near_end > 0 && (makepositive (seek_target - (shots_saved * seek_target_step))) < seek_target_step_original) {
+
                         av_log(NULL, LOG_INFO, "EOF: NO MORE OPTIONS\n");
-//                        goto skip_shot;
-goto eof;
+                        //goto skip_shot;
+                        goto eof;
                 }
 
                 /* add picture to output image */
@@ -2427,21 +2431,16 @@ goto eof;
                 ip=NULL;
 
         skip_shot:
-/*                                 if (parameters.gb_E_end > 0 && parameters.gb_x_duration > 1 && seek_target_seconds > (net_duration + parameters.gb_B_begin + start_time)) { */
-/*                         av_log(NULL, LOG_INFO, "EOF: HIT DURATION"); */
-/* //                        goto skip_shot; */
-/* goto eof; */
-/*                 } */
 
-//                if (parameters.gb_v_verbose > 0) sleep (3);
+                //if (parameters.gb_v_verbose > 0) sleep (3);
                 /* step */
                 
-//               av_log(NULL, LOG_INFO, "SKIPPED SHOT AT: (%.2f) %.2f\n", seek_target_seconds, found_target_seconds);
-                prevshot_pts=seek_target;
+                //av_log(NULL, LOG_INFO, "SKIPPED SHOT AT: (%.2f) %.2f\n", seek_target_seconds, found_target_seconds);
+                prevshot_pts=found_pts;
                 seek_target += seek_target_step;
-//                seek_target -= (int64_t)random_at_most((seek_target_step/ 10) );
+                //seek_target -= (int64_t)random_at_most((seek_target_step/ 10) );
                 seek_target_step_seconds=seek_target_step * av_q2d(pStream->time_base);
-//                                found_pts += seek_target_step;
+                //found_pts += seek_target_step;
                 /* if (near_end < 1) { */
                 /* seek_target -= (int64_t)random_at_most((long)seek_target_step - 1); */
                 /*                 seek_target += (int64_t)random_at_most((long)seek_target_step - 1); */
@@ -2450,28 +2449,25 @@ goto eof;
                 seek_evade=0;
                 direction=0;
                 evade_try=0;
-//                prevshot_pts=found_pts;
+                //prevshot_pts=found_pts;
                 av_log(NULL, AV_LOG_VERBOSE, "found_pts bottom: %"PRId64"\n", found_pts);
 
-
-
-
                 if ( (found_pts * av_q2d(pStream->time_base)) > (((net_duration + parameters.gb_B_begin + start_time) / 20) * 17)  && shots_saved > ( parameters.gb_r_row / 2)) {
-                /* if ((seek_target) > ((duration_tb / 20) * 17) && parameters.gb_r_row > 55) { */
+                        /* if ((seek_target) > ((duration_tb / 20) * 17) && parameters.gb_r_row > 55) { */
                         // If we're near the end slow down step
                         if (near_end==0){
                                 /* if ( (((duration_tb / 20) * 16) / (seek_target_step_original / 10)) < parameters.gb_r_row ) { */
                                 near_end=1;
 
-                                seek_target_step=(seek_target_step_original - ((seek_target_step_original / (duration_tb - found_pts / 20)) ));
-                                //seek_target_step=seek_target_step_original / 2;
-                                }
+                                //seek_target_step=(seek_target_step_original - ((seek_target_step_original / (duration_tb - found_pts / 20)) ));
+                                seek_target_step=seek_target_step_original / 16;
+                        }
                         //                                            }
 
-               }
+                }
                 
-//                if (seek_target <= (shots_saved * seek_target_step_original * 9 / 10) && near_end < 1 && bad_color < 1) seek_target=shots_saved * (seek_target_step_original - (int64_t)random_at_most((seek_target_step/ 10) ));
-//                if (seek_target >= (shots_saved * seek_target_step_original) && near_end < 1 && shots_saved >= 2) seek_target=((shots_saved * seek_target_step_original) - random_at_most(seek_target_step));
+                //if (seek_target <= (shots_saved * seek_target_step_original * 9 / 10) && near_end < 1 && bad_color < 1) seek_target=shots_saved * (seek_target_step_original - (int64_t)random_at_most((seek_target_step/ 10) ));
+                //if (seek_target >= (shots_saved * seek_target_step_original) && near_end < 1 && shots_saved >= 2) seek_target=((shots_saved * seek_target_step_original) - random_at_most(seek_target_step));
                 last_seek_target=seek_target;        
 
                 seek_target_seconds=seek_target * av_q2d(pStream->time_base);
@@ -2481,7 +2477,7 @@ goto eof;
                 /* seek_target * av_q2d(pStream->time_base), eff_target * av_q2d(pStream->time_base), found_pts * av_q2d(pStream->time_base), */
                 /* duration_tb * av_q2d(pStream->time_base)); // pts can be AV_NOPTS_VALUE */
 
-//        av_log(NULL, LOG_INFO, "#%05d, found_pts: %"PRId64", (int64_t)random_at_most((long)seek_target_step - 1): %"PRId64", seek_target: %"PRId64"", idx, found_pts, (int64_t)random_at_most((long)seek_target_step - 1), seek_target);
+                //av_log(NULL, LOG_INFO, "#%05d, found_pts: %"PRId64", (int64_t)random_at_most((long)seek_target_step - 1): %"PRId64", seek_target: %"PRId64"", idx, found_pts, (int64_t)random_at_most((long)seek_target_step - 1), seek_target);
 
         continue_cleanup: // cleaning up before continuing the loop
                 prevfound_pts=found_pts;
@@ -2525,7 +2521,7 @@ eof:
         /* struct timeval tfinish; */
         /* gettimeofday(&tfinish, NULL); // calendar time; effected by load & io & etc. */
         /* double diff_time=(tfinish.tv_sec + tfinish.tv_usec/1000000.0) - (tstart.tv_sec + tstart.tv_usec/1000000.0) ;*/
-// previous version reported # of decoded shots/s; now we report the # of final shots/s
+        //previous version reported # of decoded shots/s; now we report the # of final shots/s
 //av_log(NULL, LOG_INFO, "  avg. %.2f shots/s; output file: %s\n", nb_shots / diff_time, tn.out_filename);
         /* av_log(NULL, LOG_INFO, "  %.2f s, %.2f shots/s; output: %s\n", */
         /*        diff_time, (tn.idx + 1) / diff_time, tn.out_filename); */
@@ -2552,7 +2548,7 @@ cleanup:
         if (NULL != pSwsCtx)
                 sws_freeContext(pSwsCtx); // do we need to do this?
 
-// Free the video frame
+        //Free the video frame
         if (NULL != rgb_buffer)
                 av_free(rgb_buffer);
         if (NULL != pFrameRGB)
@@ -2562,12 +2558,12 @@ cleanup:
 
         av_dict_free(&pDict);
 
-// Close the codec
+        //Close the codec
         if (NULL != pCodecCtx && NULL != pCodecCtx->codec) {
                 avcodec_close(pCodecCtx);
         }
 
-// Close the video file
+        //Close the video file
         if (NULL != pFormatCtx)
                 avformat_close_input(&pFormatCtx);
 
@@ -2733,7 +2729,7 @@ void process_loop(int n, char **files)
         }
 }
 
-// copied & modified from mingw-runtime-3.13's init.c
+//copied & modified from mingw-runtime-3.13's init.c
 typedef struct {
         int newmode;
 } _startupinfo;
@@ -3060,7 +3056,7 @@ void usage()
 
 int main(int argc, char *argv[])
 {
-//        parameters.gb_v_verbose=1;
+        //parameters.gb_v_verbose=1;
         parameters.gb_argv0=path_2_file(argv[0]);
         setvbuf(stderr, NULL, _IONBF, 0); // turn off buffering in mingw
 
@@ -3203,7 +3199,7 @@ int main(int argc, char *argv[])
                         break;
                 case 'x':
                         parse_error += get_double_opt('x', &parameters.gb_x_duration, optarg, 0);
-                                        av_log(NULL, LOG_INFO, "   x duration: %.2f\n", parameters.gb_x_duration);
+                        av_log(NULL, LOG_INFO, "   x duration: %.2f\n", parameters.gb_x_duration);
                         break;
 
                 case 'z':
