@@ -515,7 +515,7 @@ cleanup:
 }
 
 /*
-  pFrame must be a PIX_FMT_RGB24 frame
+  pFrame must be a AV_PIX_FMT_RGB24 frame
 */
 void FrameRGB_2_gdImage(AVFrame *pFrame, gdImagePtr ip, int width, int height)
 {
@@ -608,7 +608,7 @@ void thumb_add_shot(thumbnail *ptn, gdImagePtr ip, int idx, int64_t pts)
 #endif
 /*
   perform convolution on pFrame and store result in ip
-  pFrame must be a PIX_FMT_RGB24 frame
+  pFrame must be a AV_PIX_FMT_RGB24 frame
   ip must be of the same size as pFrame
   begin=upper left, end=lower right
   filter should be a 2-dimensional but since we cant pass it without knowning the size, we'll use 1 dimension
@@ -697,7 +697,7 @@ int is_edge(float *edge, float edge_found)
 }
 
 /*
-  pFrame must be an PIX_FMT_RGB24 frame
+  pFrame must be an AV_PIX_FMT_RGB24 frame
   http://student.kuleuven.be/~m0216922/CG/
   http://www.pages.drexel.edu/~weg22/edge.html
   http://student.kuleuven.be/~m0216922/CG/filtering.html
@@ -775,20 +775,20 @@ void save_AVFrame(AVFrame *pFrame, int src_width, int src_height, int pix_fmt,
         struct SwsContext *pSwsCtx=NULL;
         gdImagePtr ip=NULL;
 
-        pFrameRGB=avcodec_alloc_frame();
+        pFrameRGB=av_frame_alloc();
         if (pFrameRGB == NULL) {
                 av_log(NULL, AV_LOG_ERROR, "  couldn't allocate a video frame\n");
                 goto cleanup;
         }
-        int rgb_bufsize=avpicture_get_size(PIX_FMT_RGB24, dst_width, dst_height);
+        int rgb_bufsize=avpicture_get_size(AV_PIX_FMT_RGB24, dst_width, dst_height);
         rgb_buffer=av_malloc(rgb_bufsize);
         if (NULL == rgb_buffer) {
                 av_log(NULL, AV_LOG_ERROR, "  av_malloc %d bytes failed\n", rgb_bufsize);
                 goto cleanup;
         }
-        avpicture_fill((AVPicture *) pFrameRGB, rgb_buffer, PIX_FMT_RGB24, dst_width, dst_height);
+        avpicture_fill((AVPicture *) pFrameRGB, rgb_buffer, AV_PIX_FMT_RGB24, dst_width, dst_height);
         pSwsCtx=sws_getContext(src_width, src_height, pix_fmt,
-                               dst_width, dst_height, PIX_FMT_RGB24, SWS_BILINEAR, NULL, NULL, NULL);
+                               dst_width, dst_height, AV_PIX_FMT_RGB24, SWS_BILINEAR, NULL, NULL, NULL);
         if (NULL == pSwsCtx) { // sws_getContext is not documented
                 av_log(NULL, AV_LOG_ERROR, "  sws_getContext failed\n");
                 goto cleanup;
@@ -1092,7 +1092,7 @@ double uint8_cmp(uint8_t *pa, uint8_t *pb, uint8_t *pc, int n)
 
 /*
   return sameness of the frame; 1 means the frame is the same in all directions, i.e. blank
-  pFrame must be an PIX_FMT_RGB24 frame
+  pFrame must be an AV_PIX_FMT_RGB24 frame
 */
 double blank_frame(AVFrame *pFrame, int width, int height)
 {
@@ -1116,7 +1116,7 @@ uint64_t gb_video_pkt_pts=AV_NOPTS_VALUE;
  * a frame at the time it is allocated.
  */
 int our_get_buffer(struct AVCodecContext *c, AVFrame *pic) {
-        int ret=avcodec_default_get_buffer(c, pic);
+        int ret=avcodec_default_get_buffer2(c, pic, c->flags);
         uint64_t *pts=av_malloc(sizeof(uint64_t));
         *pts=gb_video_pkt_pts;
         pic->opaque=pts;
@@ -1124,10 +1124,10 @@ int our_get_buffer(struct AVCodecContext *c, AVFrame *pic) {
         return ret;
 }
 
-void our_release_buffer(struct AVCodecContext *c, AVFrame *pic) {
-        if(pic) av_freep(&pic->opaque);
-        avcodec_default_release_buffer(c, pic);
-}
+/* void our_release_buffer(struct AVCodecContext *c, AVFrame *pic) { */
+/*         if(pic) av_freep(&pic->opaque); */
+/*         avcodec_default_release_buffer(c, pic); */
+/* } */
 
 /*
   set first to 1 when calling this for the first time of a file
@@ -1504,18 +1504,18 @@ void make_thumbnail(char *file)
         // if output files exist and modified time >= program start time,
         // we'll not overwrite and use a new name
         int unum=0;
-//                av_log(NULL, LOG_INFO, "tn.out_filename: %s.\n", tn.out_filename);
+        //av_log(NULL, LOG_INFO, "tn.out_filename: %s.\n", tn.out_filename);
         char *previous_suffix;
         asprintf(&previous_suffix, "_%010"PRId64".jpg", 1); // FIXME: hopefully 5 digits will be enough
         av_log(NULL, LOG_INFO, "previous_suffix: %s.\n", previous_suffix);
         char individual_filename[UTF8_FILENAME_SIZE]; // FIXME
         strcpy(individual_filename, tn.out_filename);
-        strcat(individual_filename, previous_suffix); // FIXME: hopefully 5 digits will be enough
+        strcat(individual_filename, previous_suffix);
 
-        if (is_reg_newer(tn.out_filename, gb_st_start)) {
-                unum=make_unique_name(tn.out_filename, parameters.gb_o_suffix, unum);
-                av_log(NULL, LOG_INFO, "%s: output file already exists. using: %s\n", parameters.gb_argv0, tn.out_filename);
-        }
+        /* if (is_reg_newer(tn.out_filename, gb_st_start)) { */
+        /*         unum=make_unique_name(tn.out_filename, parameters.gb_o_suffix, unum); */
+        /*         av_log(NULL, LOG_INFO, "%s: output file already exists. using: %s\n", parameters.gb_argv0, tn.out_filename); */
+        /* } */
         if (NULL != parameters.gb_N_suffix && is_reg_newer(tn.info_filename, gb_st_start)) {
                 unum=make_unique_name(tn.info_filename,parameters. gb_N_suffix, unum);
                 av_log(NULL, LOG_INFO, "%s: info file already exists. using: %s\n", parameters.gb_argv0, tn.info_filename);
@@ -1523,8 +1523,8 @@ void make_thumbnail(char *file)
         if (0 == parameters.gb_W_overwrite) { // dont overwrite mode
                 if (is_reg(tn.out_filename)) {
                         av_log(NULL, LOG_INFO, "%s: output file %s already exists. omitted.\n", parameters.gb_argv0, tn.out_filename);
-//                               remove( tn.out_filename );
-//                        goto cleanup;
+                        /*        remove( tn.out_filename ); */
+                        /* goto cleanup; */
                 }
                 if (NULL != parameters.gb_N_suffix && is_reg(tn.info_filename)) {
                         av_log(NULL, LOG_INFO, "%s: info file %s already exists. omitted.\n", parameters.gb_argv0, tn.info_filename);
@@ -1542,7 +1542,7 @@ void make_thumbnail(char *file)
         char *out_filename_w=tn.out_filename;
         char *info_filename_w=tn.info_filename;
 #endif
-//        out_fp=_tfopen(out_filename_w, _TEXT("wb"));
+        /* out_fp=_tfopen(out_filename_w, _TEXT("wb")); */
         /* if (NULL == out_fp) { */
         /*         av_log(NULL, AV_LOG_ERROR, "\n%s: creating output image '%s' failed: %s\n", parameters.gb_argv0, tn.out_filename, strerror(errno)); */
         /* } */
@@ -1603,12 +1603,12 @@ void make_thumbnail(char *file)
 
         // discard frames; is this OK?? // FIXME
         if (parameters.gb_s_step >= 0) {
-//        nonkey & bidir cause program crash with some files, e.g. tokyo 275 .
-                //      codec bugs???
-                //             pCodecCtx->skip_frame=AVDISCARD_NONKEY; // slower with nike 15-11-07
-//                pCodecCtx->skip_frame=AVDISCARD_DEFAULT;
-//                pCodecCtx->skip_frame=AVDISCARD_BIDIR; // this seems to speed things up
-        pCodecCtx->skip_frame=AVDISCARD_NONREF; // internal err msg but not crash
+                // nonkey & bidir cause program crash with some files, e.g. tokyo 275 .
+                //codec bugs???
+                /* pCodecCtx->skip_frame=AVDISCARD_NONKEY; // slower with nike 15-11-07 */
+                /* pCodecCtx->skip_frame=AVDISCARD_DEFAULT; */
+                pCodecCtx->skip_frame=AVDISCARD_BIDIR; // this seems to speed things up
+                /* pCodecCtx->skip_frame=AVDISCARD_NONREF; // internal err msg but not crash */
         }
 
         // Open codec
@@ -1616,11 +1616,11 @@ void make_thumbnail(char *file)
         if (ret < 0) {
                 av_log(NULL, AV_LOG_ERROR, "  couldn't open codec %s id %d: %d\n", pCodec->name, pCodec->id, ret);
                 goto cleanup;
-        }        pCodecCtx->get_buffer=our_get_buffer;
-        pCodecCtx->release_buffer=our_release_buffer;
+        }        pCodecCtx->get_buffer2=our_get_buffer;
+        //pCodecCtx->release_buffer=our_release_buffer;
 
         // Allocate video frame
-        pFrame=avcodec_alloc_frame();
+        pFrame=av_frame_alloc();
         if (pFrame == NULL) {
                 av_log(NULL, AV_LOG_ERROR, "  couldn't allocate a video frame\n");
                 goto cleanup;
@@ -1842,22 +1842,22 @@ void make_thumbnail(char *file)
                 av_log(NULL, LOG_INFO, "  step is less than 14 s; blank & blur evasion is turned off.\n");
         }
 
-        /* prepare for resize & conversion to PIX_FMT_RGB24 */
-        pFrameRGB=avcodec_alloc_frame();
+        /* prepare for resize & conversion to AV_PIX_FMT_RGB24 */
+        pFrameRGB=av_frame_alloc();
         if (pFrameRGB == NULL) {
                 av_log(NULL, AV_LOG_ERROR, "  couldn't allocate a video frame\n");
                 goto cleanup;
         }
-        int rgb_bufsize=avpicture_get_size(PIX_FMT_RGB24, tn.shot_width, tn.shot_height);
+        int rgb_bufsize=avpicture_get_size(AV_PIX_FMT_RGB24, tn.shot_width, tn.shot_height);
         rgb_buffer=av_malloc(rgb_bufsize);
         if (NULL == rgb_buffer) {
                 av_log(NULL, AV_LOG_ERROR, "  av_malloc %d bytes failed\n", rgb_bufsize);
                 goto cleanup;
         }
-        avpicture_fill((AVPicture *) pFrameRGB, rgb_buffer, PIX_FMT_RGB24,
+        avpicture_fill((AVPicture *) pFrameRGB, rgb_buffer, AV_PIX_FMT_RGB24,
                        tn.shot_width, tn.shot_height);
         pSwsCtx=sws_getContext(pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt,
-                               tn.shot_width, tn.shot_height, PIX_FMT_RGB24, SWS_BILINEAR, NULL, NULL, NULL);
+                               tn.shot_width, tn.shot_height, AV_PIX_FMT_RGB24, SWS_BILINEAR, NULL, NULL, NULL);
         if (NULL == pSwsCtx) { // sws_getContext is not documented
                 av_log(NULL, AV_LOG_ERROR, "  sws_getContext failed\n");
                 goto cleanup;
@@ -2125,12 +2125,12 @@ goto eof;
                 }
 
 //                rand_target_change=(int64_t)random_at_most((long)seek_target_step - 1);
-                /* convert to PIX_FMT_RGB24 & resize */
+                /* convert to AV_PIX_FMT_RGB24 & resize */
                 sws_scale(pSwsCtx, (const uint8_t * const*)pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
                           pFrameRGB->data, pFrameRGB->linesize);
                 /*
                   sprintf(debug_filename, "%s_resized%05d.jpg", tn.out_filename, nb_shots - 1); // DEBUG
-                  save_AVFrame(pFrameRGB, tn.shot_width, tn.shot_height, PIX_FMT_RGB24,
+                  save_AVFrame(pFrameRGB, tn.shot_width, tn.shot_height, AV_PIX_FMT_RGB24,
                   debug_filename, tn.shot_width, tn.shot_height);
                 */
 
@@ -2457,13 +2457,14 @@ goto eof;
 
 
                 if ( (found_pts * av_q2d(pStream->time_base)) > (((net_duration + parameters.gb_B_begin + start_time) / 20) * 17)  && shots_saved > ( parameters.gb_r_row / 2)) {
-//                if ((seek_target) > ((duration_tb / 20) * 17) && parameters.gb_r_row > 55) {
+                /* if ((seek_target) > ((duration_tb / 20) * 17) && parameters.gb_r_row > 55) { */
+                        // If we're near the end slow down step
                         if (near_end==0){
-//                                if ( (((duration_tb / 20) * 16) / (seek_target_step_original / 10)) < parameters.gb_r_row ) {
+                                /* if ( (((duration_tb / 20) * 16) / (seek_target_step_original / 10)) < parameters.gb_r_row ) { */
                                 near_end=1;
 
-//                                seek_target_step=(seek_target_step_original - ((seek_target_step_original / (duration_tb - found_pts / 20)) ));
-                                seek_target_step=seek_target_step_original / 2;
+                                seek_target_step=(seek_target_step_original - ((seek_target_step_original / (duration_tb - found_pts / 20)) ));
+                                //seek_target_step=seek_target_step_original / 2;
                                 }
                         //                                            }
 
