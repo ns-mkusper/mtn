@@ -1606,8 +1606,8 @@ void make_thumbnail(char *file)
                 // nonkey & bidir cause program crash with some files, e.g. tokyo 275 .
                 //codec bugs???
                 /* pCodecCtx->skip_frame=AVDISCARD_NONKEY; // slower with nike 15-11-07 */
-                /* pCodecCtx->skip_frame=AVDISCARD_DEFAULT; */
-                pCodecCtx->skip_frame=AVDISCARD_BIDIR; // this seems to speed things up
+                pCodecCtx->skip_frame=AVDISCARD_DEFAULT;
+                //pCodecCtx->skip_frame=AVDISCARD_BIDIR; // this seems to speed things up
                 /* pCodecCtx->skip_frame=AVDISCARD_NONREF; // internal err msg but not crash */
         }
 
@@ -1620,7 +1620,7 @@ void make_thumbnail(char *file)
         //POSSIBLE MEMORY LEAK!!!
         // 
         //pCodecCtx->release_buffer=our_release_buffer;
-        pCodecCtx->av_frame_unref()
+        //pCodecCtx->av_frame_unref()
 
         // Allocate video frame
         pFrame=av_frame_alloc();
@@ -2113,7 +2113,7 @@ restart:
                         */
 
                         // got same picture as previous shot, we'll skip it
-                        if (prevjpegshot_pts == found_pts && 0 == evade_try ) {
+                        if (prevjpegshot_pts > found_pts && 0 == evade_try ) {
                                 av_log(NULL, LOG_INFO, "  skipping shot at %.2f because got previous shot\n", found_target_seconds);
                                 idx--;
                                 thumb_nb--;
@@ -2201,34 +2201,34 @@ restart:
                 sprintf(individual_suffix, "_%013.3f.jpg", found_target_seconds); 
                 asprintf(&previous_suffix, "_%013.3f.jpg", found_target_seconds); 
 
-                if (is_reg(individual_filename) && dupe_count < 5 && shots_saved > 1) {
+/*                 if (is_reg(individual_filename) && dupe_count < 1 && shots_saved > 1) { */
 
-                        av_log(NULL, LOG_INFO, "%s (#%05d) already exists! (DUPECOUNT: %d)!\n", individual_filename, shots_saved, dupe_count);
+/*                         av_log(NULL, LOG_INFO, "%s (#%05d) already exists! (DUPECOUNT: %d)!\n", individual_filename, shots_saved, dupe_count); */
 
-                        rand_target_change=((seek_target_step / 10) + random_at_most(seek_target_step));
-                        //seek_target=((seek_target_step * shots_saved + 1) - rand_target_change);
+/*                         rand_target_change=((seek_target_step / 10) + random_at_most(seek_target_step)); */
+/*                         //seek_target=((seek_target_step * shots_saved + 1) - rand_target_change); */
 
-                        /* last_seek_target-=seek_target_step_original; */
-                        /* prevjpegshot_pts-=seek_target_step_original; */
-                        /* seek_target += rand_target_change; */
-                        /* found_pts+=rand_target_change; */
-                        /* eff_target += rand_target_change; */
-                        if (seek_target - seek_target_step > start_time_tb) seek_target -= seek_target_step; 
+/*                         /\* last_seek_target-=seek_target_step_original; *\/ */
+/*                         /\* prevjpegshot_pts-=seek_target_step_original; *\/ */
+/*                         /\* seek_target += rand_target_change; *\/ */
+/*                         /\* found_pts+=rand_target_change; *\/ */
+/*                         /\* eff_target += rand_target_change; *\/ */
+/*                         /\* if (seek_target - seek_target_step > start_time_tb) seek_target -= seek_target_step;  *\/ */
 
-                        last_seek_target+=rand_target_change;
-                        prevjpegshot_pts+=rand_target_change;
-                        seek_target += rand_target_change;
-                        found_pts+=rand_target_change;
-                        eff_target += rand_target_change;
-                        //found_pts -= rand_target_change;
+/*                         /\* last_seek_target+=rand_target_change; *\/ */
+/*                         /\* prevjpegshot_pts+=rand_target_change; *\/ */
+/*                         /\* seek_target += rand_target_change; *\/ */
+/*                         /\* found_pts+=rand_target_change; *\/ */
+/*                         /\* eff_target += rand_target_change; *\/ */
+/*                         /\* //found_pts -= rand_target_change; *\/ */
 
-                        dupe_count++;
+/*                         dupe_count++; */
 
 
-                        idx--;
-//av_log(NULL, LOG_INFO, "3333");
-                        //goto skip_shot;
-                } else dupe_count=0;
+/*                         idx--; */
+/* //av_log(NULL, LOG_INFO, "3333"); */
+/*                         //goto skip_shot; */
+/*                 } else */ dupe_count=0;
 
 
                 if (last_average_color < 100 && bad_color == 0) {                
@@ -2394,7 +2394,7 @@ restart:
 
 
 //else if (!is_reg(individual_filename) && bad_color == 0 && (dupe_count < 1 || shots_saved < 2)) {
-                else if (!is_reg(individual_filename) && bad_color == 0) {
+                else if (bad_color == 0) {
                         av_log(NULL, LOG_INFO, "Saving shot: #%d @ %.2f / %.2f to %s (STEP: %.2f).\n", shots_saved, ((found_pts) * av_q2d(pStream->time_base)), (net_duration + start_time + parameters.gb_B_begin), individual_filename, seek_target_step_seconds);                
                         ret=save_jpg(ip, individual_filename);
 
@@ -2436,7 +2436,7 @@ restart:
                 /* step */
                 
                 //av_log(NULL, LOG_INFO, "SKIPPED SHOT AT: (%.2f) %.2f\n", seek_target_seconds, found_target_seconds);
-                prevshot_pts=found_pts;
+                prevshot_pts=seek_target;
                 seek_target += seek_target_step;
                 //seek_target -= (int64_t)random_at_most((seek_target_step/ 10) );
                 seek_target_step_seconds=seek_target_step * av_q2d(pStream->time_base);
@@ -2452,15 +2452,16 @@ restart:
                 //prevshot_pts=found_pts;
                 av_log(NULL, AV_LOG_VERBOSE, "found_pts bottom: %"PRId64"\n", found_pts);
 
-                if ( (found_pts * av_q2d(pStream->time_base)) > (((net_duration + parameters.gb_B_begin + start_time) / 20) * 17)  && shots_saved > ( parameters.gb_r_row / 2)) {
+                if ( (found_pts * av_q2d(pStream->time_base)) > (((net_duration - parameters.gb_B_begin - start_time) / 20) * 17)  && shots_saved > ( parameters.gb_r_row / 2)) {
                         /* if ((seek_target) > ((duration_tb / 20) * 17) && parameters.gb_r_row > 55) { */
                         // If we're near the end slow down step
                         if (near_end==0){
                                 /* if ( (((duration_tb / 20) * 16) / (seek_target_step_original / 10)) < parameters.gb_r_row ) { */
                                 near_end=1;
 
-                                //seek_target_step=(seek_target_step_original - ((seek_target_step_original / (duration_tb - found_pts / 20)) ));
-                                seek_target_step=seek_target_step_original / 16;
+
+//                                seek_target_step=(seek_target_step_original - ((seek_target_step_original / (duration_tb - found_pts / 20)) ));
+                                seek_target_step=seek_target_step_original / 5;
                         }
                         //                                            }
 
@@ -3232,10 +3233,10 @@ int main(int argc, char *argv[])
                 av_log(NULL, AV_LOG_ERROR, "%s: option -z and -Z cant be used together\n", parameters.gb_argv0);
                 parse_error += 1;
         }
-        if (parameters.gb_E_end > 0 && parameters.gb_C_cut > 0) {
-                av_log(NULL, AV_LOG_ERROR, "%s: option -C and -E cant be used together\n", parameters.gb_argv0);
-                parse_error += 1;
-        }
+        /* if (parameters.gb_E_end > 0 && parameters.gb_C_cut > 0) { */
+        /*         av_log(NULL, AV_LOG_ERROR, "%s: option -C and -E cant be used together\n", parameters.gb_argv0); */
+        /*         parse_error += 1; */
+        /* } */
 
         if (0 != parse_error) {
                 usage();

@@ -162,7 +162,7 @@ typedef struct params
   int gb_V; // 1 on; 0 off
   int gb_w_width; // 0 = column * movie width
   int gb_W_overwrite; // 1 = overwrite; 0 = dont overwrite
-  float gb_x_duration; // always use seek mode; 1 on; 0 off
+  double gb_x_duration; // always use seek mode; 1 on; 0 off
   int gb_z_seek; // always use seek mode; 1 on; 0 off
   int gb_Z_nonseek; // always use non-seek mode; 1 on; 0 off
 
