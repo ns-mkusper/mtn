@@ -31,7 +31,8 @@ libavfilter     7. 16.100 /  7. 16.100
 libavresample   4.  0.  0 /  4.  0.  0
 libswscale      5.  1.100 /  5.  1.100
 libswresample   3.  1.100 /  3.  1.100
-libpostproc    55.  1.100 / 55.  1.100```
+libpostproc    55.  1.100 / 55.  1.100
+```
 
 Sample
 ===
