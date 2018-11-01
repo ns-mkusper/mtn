@@ -20,10 +20,10 @@ For project information, please visit SourceForge project summary page : http://
 Version
 ===
 
-ffmpeg version 4.0.2
+```ffmpeg version 4.0.2```
 
 Compiled with:
-libavutil      56. 14.100 / 56. 14.100
+```libavutil      56. 14.100 / 56. 14.100
 libavcodec     58. 18.100 / 58. 18.100
 libavformat    58. 12.100 / 58. 12.100
 libavdevice    58.  3.100 / 58.  3.100
@@ -31,7 +31,7 @@ libavfilter     7. 16.100 /  7. 16.100
 libavresample   4.  0.  0 /  4.  0.  0
 libswscale      5.  1.100 /  5.  1.100
 libswresample   3.  1.100 /  3.  1.100
-libpostproc    55.  1.100 / 55.  1.100
+libpostproc    55.  1.100 / 55.  1.100```
 
 Sample
 ===
