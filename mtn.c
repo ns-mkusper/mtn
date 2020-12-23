@@ -838,7 +838,7 @@ void dump_packet(AVPacket *p, AVStream * ps)
 
 void dump_codec_context(AVCodecContext * p)
 {
-        av_log(NULL, AV_LOG_VERBOSE, "***dump_codec_context %s, time_base: %d / %d\n", p->codec_name,
+        av_log(NULL, AV_LOG_VERBOSE, "***dump_codec_context %s, time_base: %d / %d\n", p->codec_type,
                p->time_base.num, p->time_base.den);
         av_log(NULL, AV_LOG_VERBOSE, "frame_number: %d, width: %d, height: %d, sample_aspect_ratio %d/%d%s\n",
                p->frame_number, p->width, p->height, p->sample_aspect_ratio.num, p->sample_aspect_ratio.den,
